@@ -1,4 +1,4 @@
-# Horizon Easy Rooster
+# Easy Rooster
 
 **Deze extensie is bedoeld voor gebruik op de rooster.horizon.nl rooster pagina**
 
