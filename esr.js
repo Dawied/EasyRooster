@@ -1,4 +1,4 @@
-let navBarDocument, navBarForm, typeSelect, elementSelect, favoritesSelect;
+let storageType, navBarDocument, navBarForm, typeSelect, elementSelect, favoritesSelect;
 
 window.onload = (e) => {
     navBarDocument = $('frame[src="frames/navbar.htm"]', top.document)[0].contentDocument;
@@ -16,22 +16,24 @@ window.onload = (e) => {
 function start() {
     populateFavorites();
 
-    browser.storage.local.get(null).then(function(result) {
+    getStorage('esrType').then(function(result) {
         // Gebruik de laatst gebruikte waarden
         if (result['esrType']) {
             typeSelect.val(result['esrType']);
             triggerEvent(navBarDocument, typeSelect, 'change');
 
-            elements = getOptions($("option", elementSelect));
+            let elements = getOptions($("option", elementSelect));
 
-            if (result['esrElement']) {
-                selectedText = result['esrElement'];
-                selectedValue = elements[selectedText];
-                if (selectedValue) {
-                    elementSelect.val(selectedValue);
-                    triggerEvent(navBarDocument, elementSelect, 'change');
+            getStorage('esrElement').then(function(result) {
+                if (result['esrElement']) {
+                    let selectedText = result['esrElement'];
+                    let selectedValue = elements[selectedText];
+                    if (selectedValue) {
+                        elementSelect.val(selectedValue);
+                        triggerEvent(navBarDocument, elementSelect, 'change');
+                    }
                 }
-            }
+            });
         }
 
         typeSelect.on("change", function(e) { onTypeChange(e);});
@@ -99,7 +101,7 @@ function onAddFavoriteClick() {
     let type = typeSelect.val();
     let element = $("option:selected", elementSelect).text();
 
-    browser.storage.local.get(null).then(function(result) {
+    getStorage('esrFavorites').then(function(result) {
         if (result['esrFavorites']) {
             let favorites = result['esrFavorites'];
 
@@ -114,10 +116,10 @@ function onAddFavoriteClick() {
 
             if (!exists) {
                 favorites.push({'type': type, 'element': element})
-                browser.storage.local.set({'esrFavorites': favorites});
+                setStorage('esrFavorites', favorites);
             }
         } else {
-            browser.storage.local.set({'esrFavorites': [{'type': type, 'element': element}]});
+            setStorage('esrFavorites', [{'type': type, 'element': element}]);
         }
         populateFavorites();
     });
@@ -131,7 +133,7 @@ function onRemoveFavoriteClick() {
     let type = selectedValue.substr(0, 1);
     let element = selectedText;
 
-    browser.storage.local.get(null).then( function(result) {
+    getStorage('esrFavorites').then( function(result) {
         if (result['esrFavorites']) {
             let favorites = result['esrFavorites'];
 
@@ -146,7 +148,7 @@ function onRemoveFavoriteClick() {
 
             if (index >= 0) {
                 favorites.splice(index, 1)
-                browser.storage.local.set({'esrFavorites': favorites});
+                setStorage('esrFavorites', favorites);
                 populateFavorites();
             }
         }
@@ -163,9 +165,8 @@ function onSelectFavorite(e) {
     typeSelect.val(type);
     triggerEvent(navBarDocument, typeSelect, 'change');
 
-    elements = getOptions($("option", elementSelect));
-
-    elementValue = elements[selectedText];
+    let elements = getOptions($("option", elementSelect));
+    let elementValue = elements[selectedText];
     if (elementValue) {
         elementSelect.val(elementValue);
         triggerEvent(navBarDocument, elementSelect, 'change');
@@ -181,7 +182,7 @@ function populateFavorites() {
         .val('0')
     ;
 
-    browser.storage.local.get(null).then(function(result) {
+    getStorage('esrFavorites').then(function(result) {
         // Vul de select met opgeslagen favorieten
         if (result['esrFavorites']) {
             let favorites = result['esrFavorites'];
@@ -199,7 +200,7 @@ function populateFavorites() {
 }
 
 function getOptions(el) {
-    options = {};
+    let options = {};
     $(el).each(function() {
         options[$(this).text()] = $(this).val();
     });
@@ -213,12 +214,12 @@ function triggerEvent(doc, el, evtName) {
 }
 
 function onTypeChange(e) {
-    browser.storage.local.set({'esrType': e.target.value});
+    setStorage('esrType', e.target.value);
 }
 
 function onElementChange(e) {
     let selectedText = $(e.target).find("option:selected").text();
-    browser.storage.local.set({'esrElement': selectedText});
+    setStorage('esrElement', selectedText);
 }
 
 function onTypeOrElementClick(e) {
@@ -243,4 +244,85 @@ function onTypeOrElementClick(e) {
 
 function isFireFox() {
     return typeof InstallTrigger !== 'undefined';
+}
+
+function getStorage(key) {
+    let storageType = getStorageType();
+
+    if (storageType === "EX") {
+        return new Promise((resolve, reject) => {
+            browser.storage.local.get(key)
+                .then(function (result) {
+                    resolve(result);
+                });
+        });
+    }
+
+    if (storageType === "GM") {
+        return new Promise((resolve, reject) => {
+            GM.getValue(key).then(function (result) {
+                resolve({[key]: result});
+            })
+        });
+    }
+
+    if (storageType === "TM") {
+        return new Promise((resolve, reject) => {
+            let result = GM_getValue(key);
+            resolve({[key]: result});
+        });
+    }
+
+}
+
+function setStorage(key, value) {
+    let storageType = getStorageType();
+
+    if(storageType === "EX") {
+        browser.storage.local.set({[key]: value});
+    }
+
+    if(storageType === "GM") {
+        GM.setValue(key, value);
+    }
+
+    if(storageType === "TM") {
+        GM_setValue(key, value);
+    }
+}
+
+function getStorageType() {
+    if (storageType !== undefined) {
+        return storageType;
+    }
+
+    storageType = "";
+    try {
+        GM.setValue("test", "true");
+        GM.deleteValue("test");
+        storageType = "GM";
+    } catch(e) {
+        storageType = "";
+    }
+
+    if (storageType === "") {
+        try {
+            GM_setValue("test", "true");
+            GM_deleteValue("test");
+            storageType = "TM";
+        } catch(e) {
+            storageType = "";
+        }
+    }
+
+    if (storageType === "") {
+        try {
+            browser.storage.local.set({test: "test"})
+            browser.storage.local.remove("test");
+            storageType = "EX";
+        } catch(e) {
+            storageType = "";
+        }
+    }
+    return storageType;
 }
