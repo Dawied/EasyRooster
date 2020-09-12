@@ -1,0 +1,21 @@
+{
+  "description": "Laatst gekozen rooster wordt gebruikt. Voeg roosters als favoriet toe.",
+  "manifest_version": 2,
+  "name": "Horizon Easy Rooster",
+  "version": "1.0",
+  "permissions": ["storage"],
+  "icons": {
+    "16": "images/esr16.png",
+    "32": "images/esr32.png",
+    "48": "images/esr48.png",
+    "128": "images/esr128.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://rooster.horizoncollege.nl/*"],
+      "js": ["browser-polyfill.js","jquery.js", "esr.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
