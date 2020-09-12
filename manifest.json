@@ -2,7 +2,7 @@
   "description": "Laatst gekozen rooster wordt gebruikt. Voeg roosters als favoriet toe.",
   "manifest_version": 2,
   "name": "Horizon Easy Rooster",
-  "version": "1.0",
+  "version": "1.1",
   "permissions": ["storage"],
   "icons": {
     "16": "images/esr16.png",
@@ -13,7 +13,7 @@
 
   "content_scripts": [
     {
-      "matches": ["https://rooster.horizoncollege.nl/*"],
+      "matches": ["https://rooster.horizoncollege.nl/rstr/ECO/HRN/Roosters/default.htm"],
       "js": ["browser-polyfill.js","jquery.js", "esr.js"],
       "run_at": "document_idle"
     }
