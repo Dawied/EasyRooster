@@ -250,7 +250,7 @@ function getStorage(key) {
     let storageType = getStorageType();
 
     if (storageType === "EX") {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             browser.storage.local.get(key)
                 .then(function (result) {
                     resolve(result);
@@ -259,7 +259,7 @@ function getStorage(key) {
     }
 
     if (storageType === "GM") {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             GM.getValue(key).then(function (result) {
                 resolve({[key]: result});
             })
@@ -267,7 +267,7 @@ function getStorage(key) {
     }
 
     if (storageType === "TM") {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             let result = GM_getValue(key);
             resolve({[key]: result});
         });
