@@ -1,6 +1,6 @@
 # Easy Rooster
 
-**Deze extensie is bedoeld voor gebruik op de rooster.horizon.nl rooster pagina**
+**Deze extensie is bedoeld voor gebruik op de publieke rooster.horizon.nl/ECO/HRN/Roosters rooster pagina**
 
 ## Automatische Installatie
 De extensie is beschikbaar via de extensie sites van FireFox en Chrome.
@@ -44,3 +44,6 @@ Klik op de "min knop" om de geselecteerde favoriet uit de lijst te verwijderen
 Als de naamgeving van een element (docent of klas) wijzigt dan zal een favoriet met de oude naam niet meer werken. Verwijder in dat geval de oude favoriet en voeg hem opnieuw toe.
 
 De favorieten kunnen niet gesorteerd worden. Ze worden op volgorde van toevoegen getoond
+
+De extensie in de stores werkt momenteel alleen op de "rooster.horizon.nl/ECO/HRN/Roosters" pagina. Als je de extensie op een andere rooster pagina wilt uitproberen dan kan je de handmatige installatie uitvoeren. 
+Verander voor de installatie de "matches" property in "manifest.json".
