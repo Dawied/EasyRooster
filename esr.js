@@ -50,13 +50,8 @@ function addUi(doc) {
     title.className = 'selection';
     title.innerHTML = "Favorieten";
 
-    // 1px voor firefox en 6 voor chrome
     let spacer = doc.createElement("div");
-    if (isFireFox()) {
-        spacer.style.cssText = ("height: 1px;");
-    } else {
-        spacer.style.cssText = ("height: 6px;");
-    }
+    spacer.style.cssText = ("height: 1px;");
 
     let div = doc.createElement("div");
     div.style.cssText = ("display: flex");
