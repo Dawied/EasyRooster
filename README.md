@@ -2,7 +2,7 @@
 
 **Deze extensie is bedoeld voor gebruik op de rooster.horizon.nl rooster pagina**
 
-##Automatische Installatie
+## Automatische Installatie
 De extensie is beschikbaar via de extensie sites van FireFox en Chrome.
 
 ### FireFox
